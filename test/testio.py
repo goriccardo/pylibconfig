@@ -4,6 +4,10 @@
 # License: GPL-3 http://www.gnu.org/licenses/gpl.txt
 
 def main():
+    read_test()
+    write_test()
+
+def read_test():
     from pylibconfig import libconfigFile
     test = libconfigFile('test/cfgfiles/test.cfg')
     appwin = test.application.window
@@ -39,6 +43,13 @@ def main():
     assert msc.unicode == "STARGΛ̊TE SG-1"
     assert msc.bigint == 9223372036854775807
     assert msc.bighex == 0x1122334455667788
+
+def write_test():
+    from pylibconfig import libconfigFile
+    test = libconfigFile('/tmp/pylibconfigtest.cfg', True)
+    assert test.set('new', 'hi', True)
+    #Dump the file
+    test.write()
 
 if __name__ == '__main__':
     main()

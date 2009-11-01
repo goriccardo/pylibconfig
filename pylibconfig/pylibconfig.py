@@ -88,11 +88,12 @@ class libconfigFile(object):
                  CONFIG_TYPE_BOOL:bool,
                  CONFIG_TYPE_ARRAY:array,
                  CONFIG_TYPE_LIST:list}
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, new=False):
+        """Warning! If new is True the file will be overwritten"""
         self._config = config_t()
         self._load_library()
         self._config_init(byref(self._config))
-        if filename:
+        if filename and not new:
             self.open(filename)
         self._openfile = filename
 
@@ -187,7 +188,7 @@ class libconfigFile(object):
         tval = type(val)
         for enum, tp in self._typedict.iteritems():
             if tp == tval:
-                return self._typedict[enum]
+                return enum
         else:
             raise ValueError('Value not understood')
 
@@ -249,8 +250,12 @@ class libconfigFile(object):
         ret = self._set_value(param, value)
         return ret
 
-    def write(self, filename):
-        """Write the config file to filename"""
+    def write(self, filename=None):
+        """
+        Write the config file to filename.
+        If the filename is not specified write to the opened file
+        """
+        if filename == None: filename = self._openfile
         self._config_write_file(byref(self._config), filename)
 
     def open(self, filename):
