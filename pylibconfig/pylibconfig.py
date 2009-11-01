@@ -130,6 +130,7 @@ class libconfigFile(object):
         self._config_setting_get_string.restype = c_char_p
         #Setters
         self._config_setting_set_int = libconfig.config_setting_set_int
+        self._config_setting_set_int64 = libconfig.config_setting_set_int64
         self._config_setting_set_float = libconfig.config_setting_set_float
         self._config_setting_set_bool = libconfig.config_setting_set_bool
         self._config_setting_set_string = libconfig.config_setting_set_string
@@ -176,7 +177,9 @@ class libconfigFile(object):
         if isinstance(value, bool):
             return self._config_setting_set_bool(cfg_set_t_p, value)
         elif isinstance(value, int):
-            return self._config_setting_set_int(cfg_set_t_p, c_int(value))
+            return self._config_setting_set_int(cfg_set_t_p, c_long(value))
+        elif isinstance(value, long):
+            return self._config_setting_set_int64(cfg_set_t_p, c_longlong(value))
         elif isinstance(value, float):
             return self._config_setting_set_float(cfg_set_t_p, c_double(value))
         elif isinstance(value, str):

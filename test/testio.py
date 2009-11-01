@@ -47,7 +47,36 @@ def read_test():
 def write_test():
     from pylibconfig import libconfigFile
     test = libconfigFile('/tmp/pylibconfigtest.cfg', True)
-    assert test.set('new', 'hi', True)
+    #Test strings
+    assert test.set('string.short', 'hi', True)
+    lls = """Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    Vestibulum fermentum, eros nec lacinia convallis, lectus est consequat
+    tellus, in condimentum risus metus èu tellus. Suspendisse potenti.
+    Proin bibendum, sapién at feugiat auctor, turpis nisi molestie lorem,
+    at pretium dolor leo vel eros. In commodo ultricies tortor at sagittis.
+    Vestibulum at nunc vel mi adipiscing dapibùs. Morbi velit justo,
+    luctus congue commodo eget, sodales non màssa. Mauris ac mauris sem.
+    Integer semper fermentum suscipit. Nunc eu purus urna.
+    Nam nec ultrices urna. Quisque eu mauris egestas nisl faucibus semper
+    eget malesuada purus. Etìam dignissim ligula at tellus consequat aliquam.
+    Nam hendrerit, magna ac placerat tincidunt, lorem liberò laoreet lacus,
+    nec tempor tellus eros a odio. Integer lectus nisi, ultricies ut rutrum
+    sed, sodales in quam.
+    """
+    assert test.set('string.long-long-string', lls, True)
+    assert test.set('math.unicode', '⨕⨘dA≉⥁ℜ', True)
+    #Test numbers
+    assert test.set('math.integer', -3400, True)
+    assert test.set('math.smallfact', reduce(lambda x,y:x*y, range(1,10)), True)
+    hugeness = 21
+    assert test.set('math.hugefact', reduce(lambda x,y:x*y, range(1,hugeness)), True)
+    assert test.math.hugefact == reduce(lambda x,y:x*y, range(1,hugeness))
+    #TODO: solve problems with longlong integers
+    assert test.set('math.floats.small', 1.452e-16, True)
+    assert test.set('math.floats.big', 140301e156, True)
+    #Test bools
+    assert test.set('math.is.a.nice.thing.right.question.mark', True, True)
+    assert test.set('The.Cretans.are.always.liars', False, add=True)
     #Dump the file
     test.write()
 
