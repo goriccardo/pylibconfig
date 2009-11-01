@@ -93,7 +93,7 @@ class libconfigFile(object):
         self._load_library()
         self._config_init(byref(self._config))
         if filename:
-            self._config_read_file(byref(self._config), filename)
+            self.open(filename)
         self._openfile = filename
 
     def _load_library(self):
@@ -119,6 +119,9 @@ class libconfigFile(object):
         self._config_setting_get_member.restype = POINTER(config_setting_t)
         #Getters
         self._config_setting_get_int = libconfig.config_setting_get_int
+        self._config_setting_get_int.restype = c_long
+        self._config_setting_get_int64 = libconfig.config_setting_get_int64
+        self._config_setting_get_int64.restype = c_longlong
         self._config_setting_get_float = libconfig.config_setting_get_float
         self._config_setting_get_float.restype = c_double
         self._config_setting_get_bool = libconfig.config_setting_get_bool
