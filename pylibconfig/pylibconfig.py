@@ -134,6 +134,14 @@ class libconfigFile(object):
         self._config_setting_set_float = libconfig.config_setting_set_float
         self._config_setting_set_bool = libconfig.config_setting_set_bool
         self._config_setting_set_string = libconfig.config_setting_set_string
+        #Element setters
+        self._config_setting_set_int_elem = libconfig.config_setting_set_int_elem
+        self._config_setting_set_int64_elem = libconfig.config_setting_set_int64_elem
+        self._config_setting_set_float_elem = libconfig.config_setting_set_string_elem
+        self._config_setting_set_bool_elem = libconfig.config_setting_set_bool_elem
+        self._config_setting_set_string_elem = libconfig.config_setting_set_string_elem
+        #Remove elements
+        self._config_setting_remove_elem = libconfig.config_setting_remove_elem
         #Add
         self._config_setting_add = libconfig.config_setting_add
         self._config_setting_add.restype = POINTER(config_setting_t)
@@ -185,7 +193,33 @@ class libconfigFile(object):
         elif isinstance(value, str):
             return self._config_setting_set_string(cfg_set_t_p, value)
         elif isinstance(value, list):
-            raise NotImplementedError('setting list is not yet implemented')
+            return self._set_list(cfg_set_t_p, value)
+
+    def _set_list(self, cfg_set_t_p, lst, idx = -1):
+        """
+        If idx is < 0 the list will be overwritten
+        """
+        if idx < 0:
+            for i in xrange(self._config_setting_length(cfg_set_t_p)):
+                self._config_setting_remove_elem(cfg_set_t_p, c_uint(i))
+            idx = -len(lst)
+        elif idx >= self._config_setting_length(cfg_set_t_p):
+            idx = -len(lst)
+        for el in lst:
+            if isinstance(el, bool):
+                self._config_setting_set_bool_elem(cfg_set_t_p, idx, el)
+            elif isinstance(el, int):
+                self._config_setting_set_int_elem(cfg_set_t_p, idx, c_long(el))
+            elif isinstance(el, long):
+                self._config_setting_set_int64_elem(cfg_set_t_p, idx, c_longlong(el))
+            elif isinstance(el, float):
+                self._config_setting_set_float_elem(cfg_set_t_p, idx, c_double(el))
+            elif isinstance(el, str):
+                self._config_setting_set_string_elem(cfg_set_t_p, idx, el)
+            else:
+                raise NotImplementedError()
+            idx += 1
+        return 1
 
     def _get_type_enum(self, val):
         tval = type(val)
@@ -242,7 +276,7 @@ class libconfigFile(object):
                 next = self._config_setting_get_member(current, nlist[0])
                 for i in xrange(len(nlist)-1):
                     if not bool(next):
-                        next = self._config_setting_add(current, nlist[i], 1)
+                        next = self._config_setting_add(current, nlist[i], self.CONFIG_TYPE_GROUP)
                     current = next
                     next = self._config_setting_get_member(next, nlist[i+1])
                 param = self._config_setting_add(current, nlist[-1], typint)
@@ -252,6 +286,21 @@ class libconfigFile(object):
                 return 0 
         ret = self._set_value(param, value)
         return ret
+
+    def set_elem(self, name, idx, value):
+        assert isinstance(name, str)
+        param = self._config_lookup(byref(self._config), name)
+        assert param.contents.type in (self.CONFIG_TYPE_LIST,self.CONFIG_TYPE_ARRAY)
+        if not isinstance(value, list): value = [value]
+        return self._set_list(param, value, idx)
+
+    def append(self, name, value):
+        assert isinstance(name, str)
+        param = self._config_lookup(byref(self._config), name)
+        assert param.contents.type in (self.CONFIG_TYPE_LIST,self.CONFIG_TYPE_ARRAY)
+        if not isinstance(value, list): value = [value]
+        idx = self._config_setting_length(param)
+        return self._set_list(param, value, idx)
 
     def write(self, filename=None):
         """

@@ -75,8 +75,11 @@ def write_test():
     assert test.set('math.floats.small', 1.452e-16, True)
     assert test.set('math.floats.big', 140301e156, True)
     #Test bools
-    assert test.set('math.is.a.nice.thing.right.question.mark', True, True)
+    assert test.set('math.is.a.nice.thing.right.question.mark', True, add=True)
     assert test.set('The.Cretans.are.always.liars', False, add=True)
+    #Test lists and arrays
+    assert test.set('math.fibonacci', [1,2,3,5,8,13], True)
+    assert test.set('personal.mynames', ['John', 'Patrick', 'Michel'], True)
     #Dump the file
     test.write()
 
