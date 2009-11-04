@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Author: Riccardo Gori <goriccardo@gmail.com>
 # License: GPL-3 http://www.gnu.org/licenses/gpl.txt
 
@@ -201,7 +202,7 @@ class libconfigFile(object):
         """
         if idx < 0:
             for i in xrange(self._config_setting_length(cfg_set_t_p)):
-                self._config_setting_remove_elem(cfg_set_t_p, c_uint(i))
+                self._config_setting_remove_elem(cfg_set_t_p, 0)
             idx = -len(lst)
         elif idx >= self._config_setting_length(cfg_set_t_p):
             idx = -len(lst)

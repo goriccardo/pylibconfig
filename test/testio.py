@@ -79,7 +79,9 @@ def write_test():
     assert test.set('The.Cretans.are.always.liars', False, add=True)
     #Test lists and arrays
     assert test.set('math.fibonacci', [1,2,3,5,8,13], True)
-    assert test.set('personal.mynames', ['John', 'Patrick', 'Michel'], True)
+    assert test.set('personal.mynames', ['John', 'Patrick', 'Michel', 'Jack'], True)
+    assert test.set('personal.mynames', ['Richard', 'Lagrange'])
+    assert test.get('personal.mynames') == ['Richard', 'Lagrange']
     #Dump the file
     test.write()
 
