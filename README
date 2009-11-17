@@ -1,1 +1,1 @@
-Python bindings to libconfig
+Python bindings to libconfig using ctypes
